@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nawadan | Profile</title>
+    <!-- アイコン用 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- フォント -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- リセットCSS --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* --- 全体の背景設定 (エモいGIFに変更) --- */
+        body {
+            background-color: #000;
+            /* ↓ ここに好きな背景GIFのURLを入れるとさらに変わります */
+            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDNyenh4aHZ6Y3Q0bm14Y3I5Y3V4Y3Z6Y3V4Y3Z6Y3V4Y3Z6eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/u0qt7h3TDT85i/giphy.gif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'JetBrains Mono', monospace;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* --- CRTモニター風の走査線エフェクト --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            z-index: 5;
+            pointer-events: none; /* クリックを邪魔しない */
+        }
+
+        /* --- 背景を暗くするオーバーレイ --- */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* 暗さ調整 */
+            z-index: 1;
+        }
+
+        /* --- メインカード --- */
+        .card {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 420px;
+            padding: 45px 25px;
+            /* グラデーションでリッチな黒ガラス感を出す */
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.6), rgba(10, 10, 10, 0.8));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            animation: fadeIn 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* --- プロフィール画像 (光るエフェクト追加) --- */
+        .pfp-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .pfp {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
+        }
+
+        .pfp:hover {
+            transform: scale(1.05);
+            border-color: #fff;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+        }
+
+        /* --- ユーザー名 --- */
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+            letter-spacing: -1px;
+        }
+
+        /* --- バッジ --- */
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            color: #aaa;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- タイプライター --- */
+        .typing-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 35px;
+            font-size: 0.95rem;
+            color: #e0e0e0;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .typing {
+            overflow: hidden;
+            border-right: 2px solid #fff;
+            white-space: nowrap;
+            animation: typing 3.5s steps(30, end), blink-caret .75s step-end infinite;
+        }
+
+        /* --- リンクアイコン (こだわりのデザイン) --- */
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .links a {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.4rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 55px;
+            height: 55px;
+            /* ガラス風ボタン */
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            /* 枠線を少し目立たせる */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ホバー時の「発光」エフェクト */
+        .links a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.9);
+            color: #fff;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), inset 0 0 5px rgba(255,255,255,0.2);
+        }
+
+        /* クリックした瞬間の動き */
+        .links a:active {
+            transform: scale(0.95);
+        }
+
+        /* アニメーション定義 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: white } }
+
+        /* モバイル対応 */
+        @media (max-width: 480px) {
+            .card { width: 85%; padding: 30px 20px; }
+            h1 { font-size: 1.6rem; }
+            .pfp { width: 100px; height: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景のCRT走査線エフェクト -->
+    <div class="scanlines"></div>
+    <div class="overlay"></div>
+
+    <div class="card">
+        <div class="pfp-container">
+            <img src="https://i.postimg.cc/SRCXHXbn/IMG-4551.jpg" alt="Nawadan" class="pfp">
+        </div>
+        
+        <h1>Nawadan</h1>
+        
+        <div class="badge">Amateur Developer</div>
+
+        <div class="typing-container">
+            <p class="typing">>> have good break time!</p>
+        </div>
+
+        <div class="links">
+            <a href="https://github.com/" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="#" target="_blank" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+            <a href="mailto:nawadan@websend.net" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+    </div>
+
+</body>
+</html>
